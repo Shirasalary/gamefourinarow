@@ -1,0 +1,60 @@
+#board {
+  width: 840px;
+  height: 700px;
+  padding: 20px 0;
+  margin: auto;
+  border-left: 50px solid yellow;
+  border-right: 50px solid yellow;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 20px;
+  background: deeppink;
+}
+
+.slot {
+  width: 100px;
+  height: 100px;
+  box-sizing: border-box;
+  border-radius: 45%;
+  background: lightgray;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  font-size: 100px;
+  font-family: sans-serif;
+}
+
+.app{
+  text-align: center;
+  text-decoration-style: wavy;
+}
+
+.blackBall{
+  width: 50px;
+  height: 50px;
+  box-sizing: border-box;
+  border-radius: 45%;
+  background: black;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  font-size: 100px;
+  font-family: sans-serif;
+}
+
+.redBall{
+  width: 50px;
+  height: 50px;
+  box-sizing: border-box;
+  border-radius: 45%;
+  background: red;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  font-size: 100px;
+  font-family: sans-serif;
+}
