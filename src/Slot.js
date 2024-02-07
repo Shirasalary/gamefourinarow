@@ -7,7 +7,7 @@ function Slot(props){
         {
             props.ch && (
                 <div>
-                    <div className={props.ch == "Red" ? "redBall" : "blackBall"}></div>
+                    <div className={props.ch === 'Player 1' ? "redBall" : "blackBall"}></div>
                 </div>)
         }
         </div>

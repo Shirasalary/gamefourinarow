@@ -13,84 +13,81 @@ class Game extends React.Component {
             ['','','','','','',''],
             ['','','','','','','']]
         ,
-        currentPlayer: "Red",
-        nextPlayer : "Black",
-        gameOver: false
+        currentPlayer: 'Player 1'
 }
     findEmptyRow(columnNumber, matrix) {
-        // עבור על כל השורות בעמודה הנתונה
         for (let row = matrix.length-1; row >= 0; row--) {
-            // בדוק אם הערך במקום הנתון בשורה הוא ריק
             if (!matrix[row][columnNumber]) {
-                // אם כן, החזר את מספר השורה
                 return  row;
             }
         }
-        // אם אין שורות פנויות, החזר -1 כדי לסמנן שאין שורה פנויה
         return -1;
     }
 
     turn = (event) => {
-       const column = event.target.getAttribute('x');
+       const column = parseInt(event.target.getAttribute('x'), 10);
        const row = this.findEmptyRow(column,this.state.board);
 
         if (row !== -1){
             this.setBoard(row,column,this.state.currentPlayer);
         }
-        this.checkWin();
+
        this.setPlayers();
     }
 
     checkWin(){
-        // if (
-        // //בדיקת שורות
-        // this.checkDirection(0,0,4,
-        //     0,0,0,1,2,3))
-        // {
-        //     //בדיקת עמודות
-        //     // this.checkDirection(0,4,0,
-        //     //     1,2,3,0,0,0)||
-        //     // //בדיקת אלכסון יורד
-        //     // this.checkDirection(0,4,4,
-        //     //     1,2,3,1,2,3)||
-        //     // //בדיקת אלכסון עולה
-        //     // this.checkDirection(3,0,4
-        //     //     -1,-2,-3,1,2,3)
-        //     console.log('יש ניצחון בשורה')
-        //
-        // }
 
-        // let result = false;
+        let result = false;
+
+        if (
+        //בדיקת שורות
+        this.checkDirection(0,0,4,
+            0,0,0,1,2,3)||
+        //בדיקת עמודות
+       this.checkCol()||
+        //בדיקת אלכסון יורד
+        this.checkDirection(0,3,4,
+            1,2,3,1,2,3)||
+        //בדיקת אלכסון עולה
+        this.checkDirection(3,0,4,
+            -1,-2,-3,1,2,3))
+        {
+            result = true;
+        }
+
+        return result;
+
+    }
+
+    checkCol(){
+        let result = false;
         const rows = this.state.board.length;
         const columns = this.state.board[0].length;
 
-        for (let row = 0; row < rows; row++) {
-            for (let col = 0; col <= columns - 4; col++) {
+        for (let col = 0; col < columns; col++) {
+            for (let row = 0; row <= rows - 4; row++) {
                 if (
                     this.state.board[row][col] &&
-                    this.state.board[row][col] === this.state.board[row][col + 1] &&
-                    this.state.board[row][col] === this.state.board[row][col + 2] &&
-                    this.state.board[row][col] === this.state.board[row][col + 3]
+                    this.state.board[row][col] === this.state.board[row + 1][col] &&
+                    this.state.board[row][col] === this.state.board[row + 2][col] &&
+                    this.state.board[row][col] === this.state.board[row + 3][col]
                 ) {
-                    this.setGameOver();
-                    break;
+                    result = true;
                 }
             }
-        }
-
-        // if (result){
-        //     this.setGameOver();
-        // }
+    }
+        return result;
     }
 
     checkDirection(startRFor, lessRCondition,lessCCondition,
                    addRow1,addRow2,addRow3,
                    addColumn1,addColumn2,addColumn3){
         let result = false;
-        const rows = this.state.board.length;
-        const columns = this.state.board[0].length;
+        let rows = this.state.board.length;
+        let columns = this.state.board[0].length;
 
         for (let row = startRFor; row < rows -lessRCondition; row++) {
+
             for (let col = 0; col <= columns -lessCCondition; col++) {
                 if (
                     this.state.board[row][col] &&
@@ -105,17 +102,9 @@ class Game extends React.Component {
         return result;
     }
 
-    setGameOver(){
-        this.setState(
-            {gameOver : true}
-        )
-
-        console.log('gameOver');
-    }
     setPlayers(){
         this.setState(prevState => ({
-            currentPlayer: prevState.nextPlayer,
-            nextPlayer: prevState.currentPlayer
+            currentPlayer: prevState.currentPlayer === 'Player 1' ? 'Player 2' : 'Player 1'
         }));
     }
 
@@ -141,18 +130,20 @@ class Game extends React.Component {
     render() {
         return (
             <div >
-                {this.state.gameOver === false ?
+                { this.checkWin() === false ?
                     //כאשר המשחק עדיין רץ
                     <div>
                         <div className="app"> {this.state.currentPlayer} Move</div>
-                        <div onClick={ !this.state.gameOver && this.turn}>
+                        <div onClick={this.turn}>
                             <Board board={this.state.board}/>
                         </div>
 
                     </div>
                     :
                     //כאשר המשחק נגמר
-                    <div> {this.state.nextPlayer} WIN! :) </div>
+                    <div className="app">
+                        {this.state.currentPlayer === 'Player 1' ? 'Player 2' : 'Player 1'} WIN! :)
+                    </div>
                 }
             </div>
         );
