@@ -1,6 +1,5 @@
 #board {
-  width: 840px;
-  height: 700px;
+
   padding: 20px 0;
   margin: auto;
   border-left: 50px solid yellow;
@@ -8,7 +7,7 @@
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  gap: 20px;
+  gap: 10px;
   background: deeppink;
 }
 
@@ -16,7 +15,7 @@
   width: 100px;
   height: 100px;
   box-sizing: border-box;
-  border-radius: 45%;
+  border-radius: 50%;
   background: lightgray;
   display: inline-flex;
   align-items: center;

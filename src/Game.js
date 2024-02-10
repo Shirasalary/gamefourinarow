@@ -2,18 +2,21 @@ import React from "react";
 import Board from "./Board";
 import * as events from "events";
 import board from "./Board";
+import Slot from "./Slot";
 class Game extends React.Component {
 
     state ={
         board :
-            [ ['','','','','','',''],
-            ['','','','','','',''],
-            ['','','','','','',''],
-            ['','','','','','',''],
-            ['','','','','','',''],
-            ['','','','','','','']]
+            [ ['','','',''],
+                ['','','',''],
+                ['','','',''],
+                ['','','','']]
         ,
-        currentPlayer: 'Player 1'
+        rows: 4,
+        columns: 4,
+        currentPlayer: 'Player 1',
+        showParameters: true,
+        showBoard: false
 }
     findEmptyRow(columnNumber, matrix) {
         for (let row = matrix.length-1; row >= 0; row--) {
@@ -61,21 +64,26 @@ class Game extends React.Component {
 
     checkCol(){
         let result = false;
-        const rows = this.state.board.length;
-        const columns = this.state.board[0].length;
+        if (!this.state.board|| !this.state.board.length || !this.state.board[0].length) {
+            result = false;
+        }else {
+            const rows = this.state.board.length;
+            const columns = this.state.board[0].length;
 
-        for (let col = 0; col < columns; col++) {
-            for (let row = 0; row <= rows - 4; row++) {
-                if (
-                    this.state.board[row][col] &&
-                    this.state.board[row][col] === this.state.board[row + 1][col] &&
-                    this.state.board[row][col] === this.state.board[row + 2][col] &&
-                    this.state.board[row][col] === this.state.board[row + 3][col]
-                ) {
-                    result = true;
+            for (let col = 0; col < columns; col++) {
+                for (let row = 0; row <= rows - 4; row++) {
+                    if (
+                        this.state.board[row][col] &&
+                        this.state.board[row][col] === this.state.board[row + 1][col] &&
+                        this.state.board[row][col] === this.state.board[row + 2][col] &&
+                        this.state.board[row][col] === this.state.board[row + 3][col]
+                    ) {
+                        result = true;
+                    }
                 }
             }
-    }
+        }
+
         return result;
     }
 
@@ -83,22 +91,27 @@ class Game extends React.Component {
                    addRow1,addRow2,addRow3,
                    addColumn1,addColumn2,addColumn3){
         let result = false;
-        let rows = this.state.board.length;
-        let columns = this.state.board[0].length;
+        if (!this.state.board|| !this.state.board.length || !this.state.board[0].length) {
+            result = false;
+        }else {
+            let rows = this.state.board.length;
+            let columns = this.state.board[0].length;
 
-        for (let row = startRFor; row < rows -lessRCondition; row++) {
+            for (let row = startRFor; row < rows -lessRCondition; row++) {
 
-            for (let col = 0; col <= columns -lessCCondition; col++) {
-                if (
-                    this.state.board[row][col] &&
-                    this.state.board[row][col] === this.state.board[row + addRow1][col + addColumn1] &&
-                    this.state.board[row][col] === this.state.board[row + addRow2][col + addColumn2] &&
-                    this.state.board[row][col] === this.state.board[row + addRow3][col + addColumn3]
-                ) {
-                    result = true;
+                for (let col = 0; col <= columns -lessCCondition; col++) {
+                    if (
+                        this.state.board[row][col] &&
+                        this.state.board[row][col] === this.state.board[row + addRow1][col + addColumn1] &&
+                        this.state.board[row][col] === this.state.board[row + addRow2][col + addColumn2] &&
+                        this.state.board[row][col] === this.state.board[row + addRow3][col + addColumn3]
+                    ) {
+                        result = true;
+                    }
                 }
             }
         }
+
         return result;
     }
 
@@ -126,28 +139,90 @@ class Game extends React.Component {
 
     }
 
+    // handleInputBoardSizeChange = (event,typeByPosition) => {
+    //
+    //     const value = event.target.value;
+    //     const numericValue = Math.max(4, parseInt(value, 10));
+    //     this.setBoardSize(numericValue,typeByPosition);
+    //
+    // }
+    //
+    // setBoardSize(size,typeByPosition){
+    //     const current = this.state.boardSize;
+    //     current[typeByPosition] = size;
+    //
+    //     this.setState({
+    //         boardSize: current
+    //     });
+    // }
+
+    handleInputChange = (event, property) => {
+        const value = event.target.value;
+        const numericValue = Math.max(4, parseInt(value, 10));
+        this.setSize(property, numericValue);
+    }
+
+    setSize = (property, size) => {
+        this.setState({
+            [property]: size,
+        });
+    }
+
+    //TODO אחרי שנוסיף את הצבעים צריך לבדוק שנבחרו צבעים שונים ורק אז להתחיל את המשחק
+    handleStatGame = () => {
+        const board = [];
+
+        for (let i = 0; i < this.state.rows; i++) {
+            const row = Array(this.state.columns).fill('');
+            board.push(row);
+        }
+
+        this.setState({
+            showParameters: false,
+            showBoard: true,
+            board: board
+        });
+    }
 
     render() {
         return (
-            <div >
-                { this.checkWin() === false ?
-                    //כאשר המשחק עדיין רץ
-                    <div>
-                        <div className="app"> {this.state.currentPlayer} Move</div>
-                        <div onClick={this.turn}>
-                            <Board board={this.state.board}/>
-                        </div>
+            //לא צריך להוסיף תכונה לגודל פשוט ישר ניצור את הלוח
+            // בonChange נבדוק תקינות קלט מינימום 4
+            //כדי שהלוח יהיה דינמי הרוחב הוא 100 והגובה הוא 107
+            <div>
+                <div style={{ display: this.state.showParameters ? 'block' : 'none' }}>
+                    <div> Connect Four Game</div>
+                    <div> Choose size to the board</div>
+                    <div>ROWS: <input type={'number'} value={this.state.rows}
+                                      onChange={(event) => this.handleInputChange(event, 'rows')}/></div>
+                    <div>COLUMNS: <input type={'number'} value={this.state.columns}
+                                         onChange={(event) => this.handleInputChange(event, 'columns')}/></div>
 
-                    </div>
-                    :
-                    //כאשר המשחק נגמר
-                    <div className="app">
-                        {this.state.currentPlayer === 'Player 1' ? 'Player 2' : 'Player 1'} WIN! :)
-                    </div>
-                }
+                    <button onClick={this.handleStatGame}>Stat Play!</button>
+                </div>
+
+                <div style={{ display: this.state.showBoard ? 'block' : 'none' }}>
+                    {this.checkWin() === false ?
+                        //כאשר המשחק עדיין רץ
+                        <div>
+                            <div className="app"> {this.state.currentPlayer} Move</div>
+                            <div onClick={this.turn}>
+                                <Board board={this.state.board}/>
+                            </div>
+
+                        </div>
+                        :
+                        //כאשר המשחק נגמר
+                        <div className="app">
+                            {this.state.currentPlayer === 'Player 1' ? 'Player 2' : 'Player 1'} WIN! :)
+                        </div>
+                    }
+                </div>
+
             </div>
         );
     }
 
 }
+
 export default Game;
