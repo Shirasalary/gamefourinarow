@@ -15,7 +15,7 @@ function Board(props){
                         (
                             board.map((row, i) => {
                                 return row.map((ch, column) => {
-                                    return <Slot ch={ch} x={column} y={i}/>
+                                    return <Slot ch={ch} x={column} y={i} player1Color={props.player1Color} player2Color={props.player2Color} />
                                 });
 
                             })

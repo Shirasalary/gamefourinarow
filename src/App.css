@@ -31,26 +31,11 @@
   font-weight: bold;
 }
 
-.blackBall{
+.ball{
   width: 50px;
   height: 50px;
   box-sizing: border-box;
   border-radius: 50%;
-  background: black;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: black;
-  font-size: 100px;
-  font-family: sans-serif;
-}
-
-.redBall{
-  width: 50px;
-  height: 50px;
-  box-sizing: border-box;
-  border-radius: 50%;
-  background: red;
   display: inline-flex;
   align-items: center;
   justify-content: center;

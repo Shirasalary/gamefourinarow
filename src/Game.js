@@ -17,6 +17,8 @@ class Game extends React.Component {
         currentPlayer: 'Player 1',
         showBoard: false,
         countdownValue: 10,
+        player1Color :"#ff0000",
+        player2Color :"#000000"
     }
 
     findEmptyRow(columnNumber) {
@@ -105,21 +107,22 @@ class Game extends React.Component {
     //     return result;
     // }
 
-    checkDirection(startRFor, lessRCondition,lessCCondition,
-                   addRow1,addRow2,addRow3,
+    checkDirection(startRFor, lessRCondition,lessCCondition, addRow1,addRow2,addRow3,
                    addColumn1,addColumn2,addColumn3){
         let result = false;
+        const rows = this.state.board.length;
+        const columns = this.state.board[0].length;
 
-        for (let row = startRFor; row < this.state.rows -lessRCondition; row++) {
+        for (let row = startRFor; row < rows -lessRCondition; row++) {
 
-            for (let col = 0; col <= this.state.columns -lessCCondition; col++) {
-                if (
-                    this.state.board[row][col] &&
-                    this.state.board[row][col] === this.state.board[row + addRow1][col + addColumn1] &&
-                    this.state.board[row][col] === this.state.board[row + addRow2][col + addColumn2] &&
-                    this.state.board[row][col] === this.state.board[row + addRow3][col + addColumn3]
-                ) {
-                    result = true;
+            for (let col = 0; col <= columns -lessCCondition; col++) {
+                if (this.state.board[row][col]) {
+                    if ( this.state.board[row][col] === this.state.board[row + addRow1][col + addColumn1] &&
+                        this.state.board[row][col] === this.state.board[row + addRow2][col + addColumn2] &&
+                        this.state.board[row][col] === this.state.board[row + addRow3][col + addColumn3]){
+                        result = true;
+                    }
+
                 }
             }
         }
@@ -157,30 +160,32 @@ class Game extends React.Component {
     handleInputChange = (event, property) => {
         const value = event.target.value;
         const numericValue = Math.max(4, parseInt(value, 10));
-        this.setSize(property, numericValue);
+        this.setValueByProperty(property, numericValue);
     }
 
-    setSize = (property, size) => {
+    setValueByProperty = (property, value) => {
+        console.log(value)
         this.setState({
-            [property]: size,
+            [property]: value
         });
     }
 
     //TODO אחרי שנוסיף את הצבעים צריך לבדוק שנבחרו צבעים שונים ורק אז להתחיל את המשחק
     handleStatGame = () => {
-        const board = [];
+        if (this.state.player1Color !== this.state.player2Color ){
+            const board = [];
+            for (let i = 0; i < this.state.rows; i++) {
+                const row = Array(this.state.columns).fill('');
+                board.push(row);
+            }
 
-        for (let i = 0; i < this.state.rows; i++) {
-            const row = Array(this.state.columns).fill('');
-            board.push(row);
+            this.setState({
+                showBoard: true,
+                board: board
+            });
+
+            this.countDown();
         }
-
-        this.setState({
-            showBoard: true,
-            board: board
-        });
-
-        this.countDown();
     }
 
 
@@ -200,27 +205,70 @@ class Game extends React.Component {
             });
         }, 1000);
     }
+
+    // function areColorsSimilar(color1, color2, threshold = 50) {
+    //     const rgb1 = hexToRgb(color1);
+    //     const rgb2 = hexToRgb(color2);
+    //
+    //     for (let i = 0; i < 3; i++) {
+    //         if (Math.abs(rgb1[i] - rgb2[i]) > threshold) {
+    //             return false;
+    //         }
+    //     }
+    //
+    //     return true;
+    // }
+    //
+    // function hexToRgb(hex) {
+    //     // המרת צבע מ-HEX ל-RGB
+    //     const bigint = parseInt(hex.substring(1), 16);
+    //     const r = (bigint >> 16) & 255;
+    //     const g = (bigint >> 8) & 255;
+    //     const b = bigint & 255;
+    //
+    //     return [r, g, b];
+    // }
+
+
     render() {
         return (
             <div className="app">
-                <div style={{ display: this.state.showBoard ? 'none' : 'block' }}>
-                    <div> Connect Four Game</div>
-                    <div> Choose size to the board</div>
-                    <div>ROWS: <input type={'number'} value={this.state.rows}
-                                      onChange={(event) => this.handleInputChange(event, 'rows')}/></div>
-                    <div>COLUMNS: <input type={'number'} value={this.state.columns}
-                                         onChange={(event) => this.handleInputChange(event, 'columns')}/></div>
+
+                {/*תפריט המשחק */}
+                <div style={{display: this.state.showBoard ? 'none' : 'block'}}>
+                    <div> Connect 4 Game</div>
+                    <div>
+                        <div> Choose size to the board</div>
+                        <div>ROWS: <input type={'number'} value={this.state.rows}
+                                          onChange={(event) => this.handleInputChange(event, 'rows')}/></div>
+                        <div>COLUMNS: <input type={'number'} value={this.state.columns}
+                                             onChange={(event) => this.handleInputChange(event, 'columns')}/></div>
+
+                    </div>
+                    <div>
+                        <div>Choose your players color:</div>
+                        <div> Player 1 color <input type="color" value={this.state.player1Color}
+                                                    onChange={(event) =>
+                                                        this.setValueByProperty(  'player1Color', event.target.value)}/>
+                        </div>
+                        <div> Player 2 color <input type="color" value={this.state.player2Color}
+                                                    onChange={(event) =>
+                                                        this.setValueByProperty( 'player2Color',event.target.value)}/>
+                        </div>
+                        <p style={{display: this.state.player1Color === this.state.player2Color ? 'block' : 'none'}}>Please choose different colors</p>
+                    </div>
 
                     <button onClick={this.handleStatGame}>Stat Play!</button>
                 </div>
 
-                <div style={{ display: this.state.showBoard ? 'block' : 'none' }}>
+                {/* משחק*/}
+                <div style={{display: this.state.showBoard ? 'block' : 'none'}}>
                     {this.checkWin() === false ?
                         //כאשר המשחק עדיין רץ
                         <div>
-                            <div > {this.state.currentPlayer} move END in {this.state.countdownValue}</div>
+                            <div> {this.state.currentPlayer} move END in {this.state.countdownValue}</div>
                             <div onClick={this.turn}>
-                                <Board board={this.state.board}/>
+                                <Board board={this.state.board} player1Color={this.state.player1Color} player2Color={this.state.player2Color}/>
                             </div>
 
                         </div>
