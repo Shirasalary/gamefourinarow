@@ -1,39 +1,32 @@
 #board {
-
-  padding: 20px 0;
+  padding: 20px;
   margin: auto;
-  border-left: 50px solid yellow;
-  border-right: 50px solid yellow;
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
   gap: 10px;
-  background: deeppink;
+  background: dodgerblue;
+  box-shadow: black;
 }
 
-.slot {
+.slot{
   width: 100px;
   height: 100px;
   box-sizing: border-box;
   border-radius: 50%;
-  background: lightgray;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: black;
-  font-size: 100px;
+  font-size: 80px;
   font-family: sans-serif;
 }
 
-.app{
-  text-align: center;
-  text-decoration-style: wavy;
-  font-weight: bold;
-}
 
 .ball{
-  width: 50px;
-  height: 50px;
+  margin-top: 18px;
+  width: 100px;
+  height: 100px;
   box-sizing: border-box;
   border-radius: 50%;
   display: inline-flex;
@@ -42,4 +35,9 @@
   color: black;
   font-size: 100px;
   font-family: sans-serif;
+}
+.app{
+  text-align: center;
+  text-decoration-style: wavy;
+  font-weight: bold;
 }

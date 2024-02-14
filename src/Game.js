@@ -12,18 +12,16 @@ class Game extends React.Component {
                 ['','','',''],
                 ['','','','']]
         ,
-        rows: 4,
-        columns: 4,
         currentPlayer: 'Player 1',
         showBoard: false,
         countdownValue: 10,
         player1Color :"#ff0000",
-        player2Color :"#000000"
+        player2Color :"#000000",
+        intervalId: null
     }
 
     findEmptyRow(columnNumber) {
-
-        for (let row = this.state.rows - 1; row >= 0; row--) {
+        for (let row = this.state.board.length - 1; row >= 0; row--) {
             if (!this.state.board[row][parseInt(columnNumber,10)]) {
                 return  row;
             }
@@ -31,12 +29,12 @@ class Game extends React.Component {
         return -1;
     }
 
-    turn = (event) => {
+    round = (event) => {
        const column = parseInt(event.target.getAttribute('x'), 10);
        const row = this.findEmptyRow(column);
 
         if (row !== -1){
-            this.setBoard(row,column,this.state.currentPlayer);
+            this.setBallInBoard(row,column,this.state.currentPlayer);
         }
 
        this.setPlayers();
@@ -65,57 +63,16 @@ class Game extends React.Component {
         return result;
 
     }
-    // checkCol(){
-    //     let result = false;
-    //     const rows = this.state.board.length;
-    //     const columns = this.state.board[0].length;
-    //
-    //     for (let row = 0; row < rows - 3; row++) {
-    //         for (let col = 0; col < columns; col++) {
-    //             if (
-    //                 this.state.board[row][col] &&
-    //                 this.state.board[row][col] === this.state.board[row + 1][col] &&
-    //                 this.state.board[row][col] === this.state.board[row + 2][col] &&
-    //                 this.state.board[row][col] === this.state.board[row + 3][col]
-    //             ) {
-    //                 result = true;
-    //             }
-    //         }
-    //     }
-    //
-    //     return result;
-    // }
 
-    // checkCol(){
-    //     let result = false;
-    //     const rows = this.state.board.length;
-    //     const columns = this.state.board[0].length;
-    //
-    //     for (let col = 0; col < columns; col++) {
-    //         for (let row = 0; row <= rows - 4; row++) {
-    //             if (
-    //                 this.state.board[row][col] &&
-    //                 this.state.board[row][col] === this.state.board[row + 1][col] &&
-    //                 this.state.board[row][col] === this.state.board[row + 2][col] &&
-    //                 this.state.board[row][col] === this.state.board[row + 3][col]
-    //             ) {
-    //                 result = true;
-    //             }
-    //         }
-    //     }
-    //
-    //     return result;
-    // }
-
-    checkDirection(startRFor, lessRCondition,lessCCondition, addRow1,addRow2,addRow3,
+    checkDirection(rowStartValue, lessRowCondition,lessColumnCondition, addRow1,addRow2,addRow3,
                    addColumn1,addColumn2,addColumn3){
         let result = false;
         const rows = this.state.board.length;
         const columns = this.state.board[0].length;
 
-        for (let row = startRFor; row < rows -lessRCondition; row++) {
+        for (let row = rowStartValue; row < rows -lessRowCondition; row++) {
 
-            for (let col = 0; col <= columns -lessCCondition; col++) {
+            for (let col = 0; col <= columns -lessColumnCondition; col++) {
                 if (this.state.board[row][col]) {
                     if ( this.state.board[row][col] === this.state.board[row + addRow1][col + addColumn1] &&
                         this.state.board[row][col] === this.state.board[row + addRow2][col + addColumn2] &&
@@ -139,71 +96,94 @@ class Game extends React.Component {
         }));
     }
 
-    setBoard(row,column,ch){
+    setBallInBoard(row, column, ch){
         this.setState(
             prevState => {
-                // יצירת העתק של המטריצה
                 const updatedBoard = [...prevState.board.map(row => [...row])];
-
-                // עדכון הערך בשורה הרצויה
                 updatedBoard[row][column] = ch;
-
-                // החזרת אובייקט המכיל את המטריצה המעודכנת
                 return { board: updatedBoard};
-
-            }
-
-    )
-
+            })
     }
 
-    handleInputChange = (event, property) => {
+    handleInputSizeBoardChange = (event, property) => {
         const value = event.target.value;
         const numericValue = Math.max(4, parseInt(value, 10));
-        this.setValueByProperty(property, numericValue);
+        this.setBoard(property, numericValue);
+    }
+
+    setBoard = (property, value) => {
+        let newRows = this.state.board.length;
+        let newColumns = this.state.board[0].length;
+        const board = [];
+
+        if (property === 'rows'){
+            newRows = value;
+        }else {
+            newColumns = value;
+        }
+
+        for (let i = 0; i < newRows; i++) {
+            const row = Array(newColumns).fill('');
+            board.push(row);
+        }
+
+        this.setState({
+            board: board
+        });
     }
 
     setValueByProperty = (property, value) => {
-        console.log(value)
         this.setState({
             [property]: value
         });
     }
 
-    //TODO אחרי שנוסיף את הצבעים צריך לבדוק שנבחרו צבעים שונים ורק אז להתחיל את המשחק
-    handleStatGame = () => {
+    handleStatGameAfterMenu = (position) => {
         if (this.state.player1Color !== this.state.player2Color ){
-            const board = [];
-            for (let i = 0; i < this.state.rows; i++) {
-                const row = Array(this.state.columns).fill('');
-                board.push(row);
-            }
-
             this.setState({
-                showBoard: true,
-                board: board
+                showBoard: true
             });
 
             this.countDown();
         }
     }
 
+    handleStatGameAgain = () =>{
+        clearInterval(this.state.intervalId);
+        this.setState({
+            board :
+                [ ['','','',''],
+                    ['','','',''],
+                    ['','','',''],
+                    ['','','','']]
+            ,
+            currentPlayer: 'Player 1',
+            showBoard: false,
+            countdownValue: 10,
+            player1Color :"#ff0000",
+            player2Color :"#000000",
+            intervalId: null
+        });
+    }
 
     countDown = () => {
 
-        setInterval(() => {
+        const intervalId = setInterval(() => {
             let currentValue = this.state.countdownValue -1 ;
 
             if (this.state.countdownValue === 0) {
                 this.setPlayers();
                 currentValue = 10 ;
-
             }
-
             this.setState({
                 countdownValue: currentValue
             });
         }, 1000);
+
+        this.setState({
+            intervalId: intervalId
+        });
+
     }
 
     // function areColorsSimilar(color1, color2, threshold = 50) {
@@ -239,10 +219,10 @@ class Game extends React.Component {
                     <div> Connect 4 Game</div>
                     <div>
                         <div> Choose size to the board</div>
-                        <div>ROWS: <input type={'number'} value={this.state.rows}
-                                          onChange={(event) => this.handleInputChange(event, 'rows')}/></div>
-                        <div>COLUMNS: <input type={'number'} value={this.state.columns}
-                                             onChange={(event) => this.handleInputChange(event, 'columns')}/></div>
+                        <div>ROWS: <input type={'number'} value={this.state.board.length}
+                                          onChange={(event) => this.handleInputSizeBoardChange(event, 'rows')}/></div>
+                        <div>COLUMNS: <input type={'number'} value={this.state.board[0].length}
+                                             onChange={(event) => this.handleInputSizeBoardChange(event, 'columns')}/></div>
 
                     </div>
                     <div>
@@ -258,7 +238,7 @@ class Game extends React.Component {
                         <p style={{display: this.state.player1Color === this.state.player2Color ? 'block' : 'none'}}>Please choose different colors</p>
                     </div>
 
-                    <button onClick={this.handleStatGame}>Stat Play!</button>
+                    <button onClick={this.handleStatGameAfterMenu}>Stat Play!</button>
                 </div>
 
                 {/* משחק*/}
@@ -267,7 +247,7 @@ class Game extends React.Component {
                         //כאשר המשחק עדיין רץ
                         <div>
                             <div> {this.state.currentPlayer} move END in {this.state.countdownValue}</div>
-                            <div onClick={this.turn}>
+                            <div onClick={this.round}>
                                 <Board board={this.state.board} player1Color={this.state.player1Color} player2Color={this.state.player2Color}/>
                             </div>
 
@@ -275,7 +255,10 @@ class Game extends React.Component {
                         :
                         //כאשר המשחק נגמר
                         <div>
-                            {this.state.currentPlayer === 'Player 1' ? 'Player 2' : 'Player 1'} WIN! :)
+                            <div>
+                                {this.state.currentPlayer === 'Player 1' ? 'Player 2' : 'Player 1'} WIN! :)
+                            </div>
+                            <button onClick={this.handleStatGameAgain}>AGAIN :) </button>
                         </div>
                     }
                 </div>
