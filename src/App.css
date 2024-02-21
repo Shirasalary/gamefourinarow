@@ -1,12 +1,19 @@
+
+
 #board {
   padding: 20px;
   margin: auto;
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
+  align-items: center;
+  justify-content: center;
   gap: 10px;
-  background: dodgerblue;
+  background: black;
   box-shadow: black;
+}
+.Player1Text{
+  font-size: 25px;
 }
 
 .slot{
@@ -22,22 +29,46 @@
   font-family: sans-serif;
 }
 
-
-.ball{
-  margin-top: 18px;
-  width: 100px;
-  height: 100px;
-  box-sizing: border-box;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: black;
-  font-size: 100px;
-  font-family: sans-serif;
-}
 .app{
+  width: 100vw;
+  height: 100vh;
+  display:flex;
+  flex-direction: column;
   text-align: center;
+  /*align-items: center;*/
+  justify-content: center;
+  gap: 30px;
   text-decoration-style: wavy;
   font-weight: bold;
+  font-family: SuperMarioFont, serif;
+  font-size: 25px;
+  background: pink;
+  color: white;
 }
+#title{
+  width: 300px;
+  height: 168px;
+  background-image: url("/public/logo.png");
+  background-repeat: no-repeat;
+  margin-left: 75vh;
+}
+.row-container {
+  display:flex;
+  flex-direction: row;
+  margin-top: 20px;
+  justify-content: space-evenly;
+}
+.button{
+  font-family: "SuperMarioFont";
+  width: 200px;
+  height: 150px;
+  font-size: 30px;
+  border-radius: 20%;
+  background: black;
+  color: white;
+}
+@font-face {
+  font-family: SuperMarioFont   ;
+  src: url("./super_mario_256/SuperMario256.ttf");
+}
+
