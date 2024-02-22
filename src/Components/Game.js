@@ -34,11 +34,9 @@ class Game extends React.Component {
     }
 
     isEquals = () => {
-        let isEquals = true;
         for (let i = 0; i < this.state.board.length; i++) {
             for (let j = 0; j < this.state.board[i].length; j++) {
                 if (this.state.board[i][j] === '') {
-                    console.log(isEquals + " game is not over")
                     return false;
                 }
             }
@@ -258,7 +256,7 @@ class Game extends React.Component {
 
 
                 {/* משחק*/}
-                <div style={{display: this.state.showBoard ? 'block' : 'none'}}>
+                <div  style={{display: this.state.showBoard ? 'block' : 'none'}}>
                     {
 
                         this.checkWin() === false && this.isEquals() === false ?

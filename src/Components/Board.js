@@ -2,8 +2,8 @@
 import Slot from "./Slot";
 function Board(props){
 
-   const widthBall = 115;
-    const heightBall = 107;
+   const widthBall =55;
+    const heightBall = 55;
     const board = props.board;
 
     return(
