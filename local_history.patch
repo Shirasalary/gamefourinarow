@@ -1,0 +1,402 @@
+Index: src/Components/Game.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Components/Game.js b/src/Components/Game.js
+--- a/src/Components/Game.js	
++++ b/src/Components/Game.js	(date 1708533219262)
+@@ -1,100 +1,99 @@
+ import React from "react";
+ import Board from "./Board";
++import * as events from "events";
++import board from "./Board";
+ import Slot from "./Slot";
+ import ColorPalette from "./ColorPalette";
+-
+ class Game extends React.Component {
+-    state = {
+-        board: [
+-            ['', '', '', ''],
+-            ['', '', '', ''],
+-            ['', '', '', ''],
+-            ['', '', '', '']
+-        ],
++
++    state ={
++        board :
++            [ ['','','',''],
++                ['','','',''],
++                ['','','',''],
++                ['','','','']]
++        ,
+         currentPlayer: 'Player 1',
+         showBoard: false,
+         countdownValue: 10,
+-        player1Color: "#e91e63",
+-        player2Color: "#2196f3",
++        player1Color :"#e91e63",
++        player2Color :"#2196f3",
+         intervalId: null
+-    };
++    }
+ 
+     findEmptyRow(columnNumber) {
+         for (let row = this.state.board.length - 1; row >= 0; row--) {
+-            if (!this.state.board[row][parseInt(columnNumber, 10)]) {
+-                return row;
++            if (!this.state.board[row][parseInt(columnNumber,10)]) {
++                return  row;
+             }
+         }
+         return -1;
+     }
+ 
+-    isBoardFull(board) {
+-        return board.flat().every(cell => cell !== '');
+-    }
+-
+-    getXAttribute = (x) => {
++    getXAttribute = (x) =>{
+         return x;
+-    };
+-
++    }
+     round = (event) => {
+-        const column = +event.currentTarget.getAttribute('x');
+-        const row = this.findEmptyRow(column);
++        console.log(event.target.getAttribute('x'))
++        const column = parseInt(event.target.getAttribute('x'), 10);
++       const row = this.findEmptyRow(column);
++       // console.log(column)
++       // console.log(row)
++        if(isNaN(column)){
++           // console.log("fixed")
++            return
++        }
+ 
+-        if (row !== -1) {
+-            this.setBallInBoard(row, column, this.state.currentPlayer);
++        if (row !== -1){
++            this.setBallInBoard(row,column,this.state.currentPlayer);
+             this.setPlayers();
+ 
+-            if (this.isBoardFull(this.state.board)) {
+-                alert('Game Over! The board is full.');
+-                // Add any additional logic or reset the game as needed
+-            }
+-        } else {
+-            alert('The column is full');
++        }else{
++            alert("The column is full")
+         }
+-    };
++
++    }
+ 
+-    checkWin() {
++    checkWin(){
++
+         let result = false;
+         if (
+-            this.checkDirection(0, 0, 4, 0, 0, 0, 1, 2, 3) ||
+-            this.checkDirection(0, 3, 0, 1, 2, 3, 0, 0, 0) ||
+-            this.checkDirection(0, 3, 4, 1, 2, 3, 1, 2, 3) ||
+-            this.checkDirection(3, 0, 4, -1, -2, -3, 1, 2, 3)
+-        ) {
++        //בדיקת שורות
++        this.checkDirection(0,0,4,
++            0,0,0,1,2,3)||
++        //בדיקת עמודות
++           this.checkDirection(0,3,0,
++               1,2,3,0,0,0)||
++        //בדיקת אלכסון יורד
++        this.checkDirection(0,3,4,
++            1,2,3,1,2,3)||
++        //בדיקת אלכסון עולה
++        this.checkDirection(3,0,4,
++            -1,-2,-3,1,2,3))
++        {
+             result = true;
+         }
+ 
+         return result;
++
+     }
+ 
+-    checkDirection(
+-        rowStartValue,
+-        lessRowCondition,
+-        lessColumnCondition,
+-        addRow1,
+-        addRow2,
+-        addRow3,
+-        addColumn1,
+-        addColumn2,
+-        addColumn3
+-    ) {
++    checkDirection(rowStartValue, lessRowCondition,lessColumnCondition, addRow1,addRow2,addRow3,
++                   addColumn1,addColumn2,addColumn3){
+         let result = false;
+         const rows = this.state.board.length;
+         const columns = this.state.board[0].length;
+ 
+-        for (let row = rowStartValue; row < rows - lessRowCondition; row++) {
+-            for (let col = 0; col <= columns - lessColumnCondition; col++) {
++        for (let row = rowStartValue; row < rows -lessRowCondition; row++) {
++
++            for (let col = 0; col <= columns -lessColumnCondition; col++) {
+                 if (this.state.board[row][col]) {
+-                    if (
+-                        this.state.board[row][col] ===
+-                        this.state.board[row + addRow1][col + addColumn1] &&
+-                        this.state.board[row][col] ===
+-                        this.state.board[row + addRow2][col + addColumn2] &&
+-                        this.state.board[row][col] ===
+-                        this.state.board[row + addRow3][col + addColumn3]
+-                    ) {
++                    if ( this.state.board[row][col] === this.state.board[row + addRow1][col + addColumn1] &&
++                        this.state.board[row][col] === this.state.board[row + addRow2][col + addColumn2] &&
++                        this.state.board[row][col] === this.state.board[row + addRow3][col + addColumn3]){
+                         result = true;
+                     }
++
+                 }
+             }
+         }
+@@ -102,39 +101,44 @@
+         return result;
+     }
+ 
+-    setPlayers() {
+-        this.setState((prevState) => ({
++
++    setPlayers(){
++        this.setState(prevState => ({
+             currentPlayer: prevState.currentPlayer === 'Player 1' ? 'Player 2' : 'Player 1',
+             countdownValue: 10
++
+         }));
+     }
+ 
+-    setBallInBoard(row, column, ch) {
+-        this.setState((prevState) => {
+-            const updatedBoard = [...prevState.board.map((row) => [...row])];
+-            updatedBoard[row][column] = ch;
+-            return { board: updatedBoard };
+-        });
++    setBallInBoard(row, column, ch){
++        this.setState(
++            prevState => {
++                const updatedBoard = [...prevState.board.map(row => [...row])];
++                updatedBoard[row][column] = ch;
++                return { board: updatedBoard};
++            })
+     }
+ 
+     handleInputSizeBoardChange = (event, property) => {
++
+         const value = event.target.value;
+-        if (value >= 4 && value <= 10) {
++        if(value>=4 && value<=10) {
+             const numericValue = Math.max(4, parseInt(value, 10));
+             this.setBoard(property, numericValue);
+-        } else {
+-            alert("Enter a number between 4-10");
++        }else{
++            alert("Enter a number between 4-10")
+         }
+-    };
++
++    }
+ 
+     setBoard = (property, value) => {
+         let newRows = this.state.board.length;
+         let newColumns = this.state.board[0].length;
+         const board = [];
+ 
+-        if (property === 'rows') {
++        if (property === 'rows'){
+             newRows = value;
+-        } else {
++        }else {
+             newColumns = value;
+         }
+ 
+@@ -146,49 +150,51 @@
+         this.setState({
+             board: board
+         });
+-    };
++    }
+ 
+     setColor = (property, value) => {
++
+         this.setState({
+             [property]: value
+         });
+-    };
++    }
+ 
+-    handleStatGameAfterMenu = () => {
+-        if (this.state.player1Color !== this.state.player2Color) {
++    handleStatGameAfterMenu = (position) => {
++        if (this.state.player1Color !== this.state.player2Color ){
+             this.setState({
+                 showBoard: true
+             });
+ 
+             this.countDown();
+         }
+-    };
++    }
+ 
+-    handleStatGameAgain = () => {
++    handleStatGameAgain = () =>{
+         clearInterval(this.state.intervalId);
+         this.setState({
+-            board: [
+-                ['', '', '', ''],
+-                ['', '', '', ''],
+-                ['', '', '', ''],
+-                ['', '', '', '']
+-            ],
++            board :
++                [ ['','','',''],
++                    ['','','',''],
++                    ['','','',''],
++                    ['','','','']]
++            ,
+             currentPlayer: 'Player 1',
+             showBoard: false,
+             countdownValue: 10,
+-            player1Color: "#e91e63",
+-            player2Color: "#2196f3",
++            player1Color :"#e91e63",
++            player2Color :"#2196f3",
+             intervalId: null
+         });
+-    };
++    }
+ 
+     countDown = () => {
++
+         const intervalId = setInterval(() => {
+-            let currentValue = this.state.countdownValue - 1;
++            let currentValue = this.state.countdownValue -1 ;
+ 
+             if (this.state.countdownValue === 0) {
+                 this.setPlayers();
+-                currentValue = 10;
++                currentValue = 10 ;
+             }
+             this.setState({
+                 countdownValue: currentValue
+@@ -198,7 +204,9 @@
+         this.setState({
+             intervalId: intervalId
+         });
+-    };
++
++    }
++
+ 
+     render() {
+         return (
+@@ -206,24 +214,14 @@
+                 <div id={"title"}></div>
+ 
+                 {/*תפריט המשחק */}
+-                <div style={{ display: this.state.showBoard ? 'none' : 'block' }}>
++                <div style={{display: this.state.showBoard ? 'none' : 'block'}}>
+                     <div className={'row-container'}>
+-                        <div>
+-                            ROWS:{' '}
+-                            <input
+-                                type={'number'}
+-                                value={this.state.board.length}
+-                                onChange={(event) => this.handleInputSizeBoardChange(event, 'rows')}
+-                            />
++                        <div>ROWS: <input type={'number'} value={this.state.board.length}
++                                          onChange={(event) => this.handleInputSizeBoardChange(event, 'rows')}/></div>
++                        <div>COLUMNS: <input type={'number'} value={this.state.board[0].length}
++                                             onChange={(event) => this.handleInputSizeBoardChange(event, 'columns')}/>
+                         </div>
+-                        <div>
+-                            COLUMNS:{' '}
+-                            <input
+-                                type={'number'}
+-                                value={this.state.board[0].length}
+-                                onChange={(event) => this.handleInputSizeBoardChange(event, 'columns')}
+-                            />
+-                        </div>
++
+                     </div>
+                     <div>
+                         <div className={'row-container'}>
+@@ -231,33 +229,33 @@
+                             <div>Player 2 color</div>
+                         </div>
+                         <div className={'row-container'}>
+-                            <ColorPalette player={1} currentColor={this.state.player1Color} onColorChange={this.setColor} />
+-                            <ColorPalette player={2} currentColor={this.state.player2Color} onColorChange={this.setColor} />
++                            <ColorPalette player={1} currentColor={this.state.player1Color}
++                                          onColorChange={this.setColor}/>
++                            <ColorPalette player={2} currentColor={this.state.player2Color}
++                                          onColorChange={this.setColor}/>
+                         </div>
+ 
+-                        <p style={{ display: this.state.player1Color === this.state.player2Color ? 'block' : 'none' }}>
+-                            Please choose different colors
+-                        </p>
++                        <p style={{display: this.state.player1Color === this.state.player2Color ? 'block' : 'none'}}>Please
++                            choose different colors</p>
+                     </div>
+ 
+-                    <button id={"start"} onClick={this.handleStatGameAfterMenu}>
+-                        Start Play!
+-                    </button>
++                    <button id={"start"} onClick={this.handleStatGameAfterMenu}>Start Play!</button>
+                 </div>
+ 
+                 {/* משחק*/}
+-                <div style={{ display: this.state.showBoard ? 'block' : 'none' }}>
+-                    {this.checkWin() === false ? (
++                <div style={{display: this.state.showBoard ? 'block' : 'none'}}>
++                    {
++                        this.checkWin() === false ?
+                         //כאשר המשחק עדיין רץ
+                         <div>
+-                            <div>
+-                                {this.state.currentPlayer} move END in {this.state.countdownValue}
+-                            </div>
++                            <div> {this.state.currentPlayer} move END in {this.state.countdownValue}</div>
+                             <div onClick={this.round}>
+-                                <Board board={this.state.board} player1Color={this.state.player1Color} player2Color={this.state.player2Color} />
++                                <Board board={this.state.board} player1Color={this.state.player1Color}
++                                       player2Color={this.state.player2Color}/>
+                             </div>
++
+                         </div>
+-                    ) : (
++                        :
+                         //כאשר המשחק נגמר
+                         <div>
+                             <div>
+@@ -265,11 +263,13 @@
+                             </div>
+                             <button onClick={this.handleStatGameAgain}>AGAIN :)</button>
+                         </div>
+-                    )}
++                    }
+                 </div>
++
+             </div>
+         );
+     }
++
+ }
+ 
+-export default Game;
++export default Game;
+\ No newline at end of file
