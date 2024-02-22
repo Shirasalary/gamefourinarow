@@ -51,8 +51,8 @@ class Game extends React.Component {
         const column = parseInt(event.target.getAttribute('x'), 10);
         const row = this.findEmptyRow(column);
 
-        if (row !== -1){
-            this.setBallInBoard(row,column,this.state.currentPlayer);
+        if (row !== -1) {
+            this.setBallInBoard(row, column, this.state.currentPlayer);
             this.setPlayers();
         }
 
@@ -152,7 +152,10 @@ class Game extends React.Component {
         }
 
         for (let i = 0; i < newRows; i++) {
-            const row = Array(newColumns).fill('');
+            const row = [];
+            for (let j = 0; j < newColumns; j++) {
+                row.push('');
+            }
             board.push(row);
         }
 
@@ -244,7 +247,8 @@ class Game extends React.Component {
                                           onColorChange={this.setColor}/>
                         </div>
 
-                        <p style={{display: this.state.isCorrectBoardSize === false? 'block' : 'none'}}>Please choose number between 4 to 10</p>
+                        <p style={{display: this.state.isCorrectBoardSize === false ? 'block' : 'none'}}>Please choose
+                            number between 4 to 10</p>
                         <p style={{display: this.state.player1Color === this.state.player2Color ? 'block' : 'none'}}>Please
                             choose different colors</p>
                     </div>
